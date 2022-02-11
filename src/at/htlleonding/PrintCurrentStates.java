@@ -37,10 +37,10 @@ public class PrintCurrentStates {
         System.out.println();
         double milsElapsed = (double) System.currentTimeMillis() - (double) _firstTransactionTime;
         double minutesElapsed = milsElapsed / 1000 / 60;
-        System.out.println("Transactions per minute: \u001B[33m" +
+        System.out.println(Const.eatenAlias + " per minute: \u001B[33m" +
                 Math.round(_actualTransactionCount / minutesElapsed) +
                 "\u001B[0m");
-        System.out.println("Transactions per minute per Transaction: \u001B[34m" +
+        System.out.println(Const.eatenAlias + " per minute per " + Const.PhilosopherAlias + ": \u001B[34m" +
                 Math.round(_actualTransactionCount / minutesElapsed / Settings.NumberOfTransactions) +
                 "\u001B[0m");
         System.out.println(highestDiff());
@@ -52,7 +52,7 @@ public class PrintCurrentStates {
         long max = Long.MIN_VALUE;
         String retVal = "";
         if (Settings.ShallPrintAllActualTransactionNumbers) {
-            retVal = "Actual transactions: ";
+            retVal = "Actual "+Const.eatenAlias+": ";
         }
         for (long curr : _transactionTransactions
         ) {

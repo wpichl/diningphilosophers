@@ -2,13 +2,13 @@ package at.htlleonding;
 
 import java.util.concurrent.Semaphore;
 
-public class BankAccount {
+public class Fork {
     private String mName = null;
     private String mShortName = null;
     private Integer mBalance = null;
     private Semaphore _semaphore;
 
-    public BankAccount(String name,String shortName, Integer balance) {
+    public Fork(String name, String shortName, Integer balance) {
         mName = name;
         mShortName = shortName;
         mBalance = balance;
