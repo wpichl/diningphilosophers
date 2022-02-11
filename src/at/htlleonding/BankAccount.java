@@ -1,25 +1,35 @@
 package at.htlleonding;
 
+import java.util.concurrent.Semaphore;
+
 public class BankAccount {
     private String mName = null;
     private String mShortName = null;
     private Integer mBalance = null;
-    private boolean _canBeUsed;
+    private Semaphore _semaphore;
 
     public BankAccount(String name,String shortName, Integer balance) {
         mName = name;
         mShortName = shortName;
         mBalance = balance;
-        _canBeUsed = true;
+        _semaphore = new Semaphore(1);
     }
 
     public boolean canBeUsed()
     {
-        return _canBeUsed;
+        return _semaphore.availablePermits() > 0;
     }
-    public void updateUsage(boolean canBeUsedAgain)
+    public void grab()
     {
-        _canBeUsed = canBeUsedAgain;
+        try {
+            _semaphore.acquire();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Cant aquire semaphore");
+        }
+    }
+    void release() {
+        _semaphore.release();
     }
     public String getName() {
         return mName;

@@ -38,9 +38,9 @@ public class Transactions implements Runnable {
             _availableAccounts.clear();
             try {
                 if (Settings.Mode == Const.PossibleMode.StaleMate) {
-                    StaleMatePossibleVariation();
+                    DeadLockVariation();
                 } else if (Settings.Mode == Const.PossibleMode.LaysDownAccWhenNotNeeded) {
-                    StaleMateNotPossibleVariation();
+                    LayingDownIfNotNeededVariation();
                 } else if (Settings.Mode == Const.PossibleMode.Synchronized) {
                     SynchronizedVariation();
                 } else if (Settings.Mode == Const.PossibleMode.Pattern) {
@@ -57,12 +57,12 @@ public class Transactions implements Runnable {
         if (Pattern.patternAllowsAction(_idx)) {
 
             if (mLeftAccount.canBeUsed()) {
-                mLeftAccount.updateUsage(false);
+                mLeftAccount.grab();
                 _availableAccounts.add(mLeftAccount);
                 doAction(": Picked up left account");
 
                 if (mRightAccount.canBeUsed()) {
-                    mRightAccount.updateUsage(false);
+                    mRightAccount.grab();
                     _availableAccounts.add((mRightAccount));
                     doAction(": Picked up right account");
 
@@ -70,14 +70,14 @@ public class Transactions implements Runnable {
 
                     _availableAccounts.remove(mLeftAccount);
                     doAction(": transacted. Put down left account");
-                    mLeftAccount.updateUsage(true);
+                    mLeftAccount.release();
                     _availableAccounts.remove(mRightAccount);
                     doAction(": transacted. Put down right account - back to thinking");
-                    mRightAccount.updateUsage(true);
+                    mRightAccount.release();
                 } else {
                     _availableAccounts.remove(mLeftAccount);
                     doAction(": right could not be picked up, putting left back - back to thinking");
-                    mLeftAccount.updateUsage(true);
+                    mLeftAccount.release();
                 }
 
                 Pattern.attemptMovePattern(_idx);
@@ -87,11 +87,11 @@ public class Transactions implements Runnable {
 
     private synchronized void SynchronizedVariation() throws InterruptedException {
         if (mLeftAccount.canBeUsed()) {
-            mLeftAccount.updateUsage(false);
+            mLeftAccount.grab();
             _availableAccounts.add(mLeftAccount);
             doAction(": Picked up left account");
             if (mRightAccount.canBeUsed()) {
-                mRightAccount.updateUsage(false);
+                mRightAccount.grab();
                 _availableAccounts.add((mRightAccount));
                 doAction(": Picked up right account");
 
@@ -99,26 +99,26 @@ public class Transactions implements Runnable {
 
                 _availableAccounts.remove(mLeftAccount);
                 doAction(": transacted. Put down left account");
-                mLeftAccount.updateUsage(true);
+                mLeftAccount.release();
                 _availableAccounts.remove(mRightAccount);
                 doAction(": transacted. Put down right account - back to thinking");
-                mRightAccount.updateUsage(true);
+                mRightAccount.release();
             } else {
                 _availableAccounts.remove(mLeftAccount);
                 doAction(": right could not be picked up, putting left back - back to thinking");
-                mLeftAccount.updateUsage(true);
+                mLeftAccount.release();
             }
         }
     }
 
-    private void StaleMateNotPossibleVariation() throws InterruptedException {
+    private void LayingDownIfNotNeededVariation() throws InterruptedException {
         if (mLeftAccount.canBeUsed()) {
-            mLeftAccount.updateUsage(false);
+            mLeftAccount.grab();
             _availableAccounts.add(mLeftAccount);
             doAction(": Picked up left account");
 
             if (mRightAccount.canBeUsed()) {
-                mRightAccount.updateUsage(false);
+                mRightAccount.grab();
                 _availableAccounts.add((mRightAccount));
                 doAction(": Picked up right account");
 
@@ -126,26 +126,26 @@ public class Transactions implements Runnable {
 
                 _availableAccounts.remove(mLeftAccount);
                 doAction(": transacted. Put down left account");
-                mLeftAccount.updateUsage(true);
+                mLeftAccount.release();
                 _availableAccounts.remove(mRightAccount);
                 doAction(": transacted. Put down right account - back to thinking");
-                mRightAccount.updateUsage(true);
+                mRightAccount.release();
             } else {
                 _availableAccounts.remove(mLeftAccount);
                 doAction(": right could not be picked up, putting left back - back to thinking");
-                mLeftAccount.updateUsage(true);
+                mLeftAccount.release();
             }
         }
     }
 
-    private void StaleMatePossibleVariation() throws InterruptedException {
+    private void DeadLockVariation() throws InterruptedException {
         if (mLeftAccount.canBeUsed()) {
-            mLeftAccount.updateUsage(false);
+            mLeftAccount.grab();
             _availableAccounts.add(mLeftAccount);
             doAction(": Picked up left account");
         }
         if (mRightAccount.canBeUsed()) {
-            mRightAccount.updateUsage(false);
+            mRightAccount.grab();
             _availableAccounts.add((mRightAccount));
             doAction(": Picked up right account");
         }
@@ -154,11 +154,11 @@ public class Transactions implements Runnable {
 
             _availableAccounts.remove(mRightAccount);
             doAction(": Put down right account");
-            mRightAccount.updateUsage(true);
+            mRightAccount.release();
 
             _availableAccounts.remove(mLeftAccount);
             doAction(": Put down left account - back to thinking");
-            mLeftAccount.updateUsage(true);
+            mLeftAccount.release();
         }
     }
 
