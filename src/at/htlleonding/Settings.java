@@ -7,5 +7,5 @@ public class Settings {
 
     public static final boolean ShallPrintAllActualTransactionNumbers = true;
 
-    public static Const.PossibleMode Mode = Const.PossibleMode.LaysDownAccWhenNotNeeded;
+    public static Const.PossibleMode Mode = Const.PossibleMode.OnlyOneCanTransfer;
 }

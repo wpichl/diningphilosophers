@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class Transactions implements Runnable {
     private BankAccount mLeftAccount;
     private BankAccount mRightAccount;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("mm:ss:ms");
+    private Semaphore _semaphore;
     private int _idx;
     List<BankAccount> _availableAccounts = new LinkedList<>();
 
@@ -16,6 +18,7 @@ public class Transactions implements Runnable {
         mLeftAccount = leftAccount;
         mRightAccount = rightAccount;
         _idx = idx;
+        _semaphore = new Semaphore(1);
     }
 
     public BankAccount getLeftAccount() {
@@ -41,8 +44,8 @@ public class Transactions implements Runnable {
                     DeadLockVariation();
                 } else if (Settings.Mode == Const.PossibleMode.LaysDownAccWhenNotNeeded) {
                     LayingDownIfNotNeededVariation();
-                } else if (Settings.Mode == Const.PossibleMode.Synchronized) {
-                    SynchronizedVariation();
+                } else if (Settings.Mode == Const.PossibleMode.OnlyOneCanTransfer) {
+                    SemaphoreVariation();
                 } else if (Settings.Mode == Const.PossibleMode.Pattern) {
                     PatternVariation();
                 }
@@ -53,9 +56,8 @@ public class Transactions implements Runnable {
         }
     }
 
-    private synchronized void PatternVariation() throws InterruptedException {
+    private void PatternVariation() throws InterruptedException {
         if (Pattern.patternAllowsAction(_idx)) {
-
             if (mLeftAccount.canBeUsed()) {
                 mLeftAccount.grab();
                 _availableAccounts.add(mLeftAccount);
@@ -85,29 +87,34 @@ public class Transactions implements Runnable {
         }
     }
 
-    private synchronized void SynchronizedVariation() throws InterruptedException {
-        if (mLeftAccount.canBeUsed()) {
-            mLeftAccount.grab();
-            _availableAccounts.add(mLeftAccount);
-            doAction(": Picked up left account");
-            if (mRightAccount.canBeUsed()) {
-                mRightAccount.grab();
-                _availableAccounts.add((mRightAccount));
-                doAction(": Picked up right account");
+    private synchronized void SemaphoreVariation() throws InterruptedException {
+        if (_semaphore.availablePermits() > 0)
+        {
+            _semaphore.acquire();
+            if (mLeftAccount.canBeUsed()) {
+                mLeftAccount.grab();
+                _availableAccounts.add(mLeftAccount);
+                doAction(": Picked up left account");
+                if (mRightAccount.canBeUsed()) {
+                    mRightAccount.grab();
+                    _availableAccounts.add((mRightAccount));
+                    doAction(": Picked up right account");
 
-                doAction(Const.TransactionMsg);
+                    doAction(Const.TransactionMsg);
 
-                _availableAccounts.remove(mLeftAccount);
-                doAction(": transacted. Put down left account");
-                mLeftAccount.release();
-                _availableAccounts.remove(mRightAccount);
-                doAction(": transacted. Put down right account - back to thinking");
-                mRightAccount.release();
-            } else {
-                _availableAccounts.remove(mLeftAccount);
-                doAction(": right could not be picked up, putting left back - back to thinking");
-                mLeftAccount.release();
+                    _availableAccounts.remove(mLeftAccount);
+                    doAction(": transacted. Put down left account");
+                    mLeftAccount.release();
+                    _availableAccounts.remove(mRightAccount);
+                    doAction(": transacted. Put down right account - back to thinking");
+                    mRightAccount.release();
+                } else {
+                    _availableAccounts.remove(mLeftAccount);
+                    doAction(": right could not be picked up, putting left back - back to thinking");
+                    mLeftAccount.release();
+                }
             }
+            _semaphore.release();
         }
     }
 

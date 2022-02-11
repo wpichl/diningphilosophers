@@ -6,7 +6,7 @@ public class Const {
     public enum PossibleMode{
         StaleMate,
         LaysDownAccWhenNotNeeded,
-        Synchronized,
+        OnlyOneCanTransfer,
         Pattern
     }
 }
