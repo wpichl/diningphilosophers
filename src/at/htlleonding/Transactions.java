@@ -37,14 +37,42 @@ public class Transactions implements Runnable {
         while (true) {
             _availableAccounts.clear();
             try {
-                if (Const.StaleMatePossible) {
+                if (Const.Mode == Const.PossibleMode.StaleMate) {
                     StaleMatePossibleVariation();
-                } else {
+                } else if (Const.Mode == Const.PossibleMode.LaysDownAccWhenNotNeeded) {
                     StaleMateNotPossibleVariation();
+                } else if (Const.Mode == Const.PossibleMode.Synchronized) {
+                    SynchronizedVariation();
                 }
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return;
+            }
+        }
+    }
+
+    private synchronized void SynchronizedVariation() throws InterruptedException {
+        if (mLeftAccount.canBeUsed()) {
+            mLeftAccount.updateUsage(false);
+            _availableAccounts.add(mLeftAccount);
+            doAction(": Picked up left account");
+            if (mRightAccount.canBeUsed()) {
+                mRightAccount.updateUsage(false);
+                _availableAccounts.add((mRightAccount));
+                doAction(": Picked up right account");
+
+                doAction(Const.TransactionMsg);
+
+                _availableAccounts.remove(mLeftAccount);
+                doAction(": transacted. Put down left account");
+                mLeftAccount.updateUsage(true);
+                _availableAccounts.remove(mRightAccount);
+                doAction(": transacted. Put down right account - back to thinking");
+                mRightAccount.updateUsage(true);
+            } else {
+                _availableAccounts.remove(mLeftAccount);
+                doAction(": right could not be picked up, putting left back - back to thinking");
+                mLeftAccount.updateUsage(true);
             }
         }
     }
@@ -68,8 +96,7 @@ public class Transactions implements Runnable {
                 _availableAccounts.remove(mRightAccount);
                 doAction(": transacted. Put down right account - back to thinking");
                 mRightAccount.updateUsage(true);
-            }
-            else{
+            } else {
                 _availableAccounts.remove(mLeftAccount);
                 doAction(": right could not be picked up, putting left back - back to thinking");
                 mLeftAccount.updateUsage(true);
@@ -113,14 +140,13 @@ public class Transactions implements Runnable {
             accounts = " No Accounts ";
         }
         boolean isTransactionMsg = false;
-        if(action == Const.TransactionMsg)
-        {
+        if (action == Const.TransactionMsg) {
             isTransactionMsg = true;
         }
 
         PrintCurrentStates.updateState(_idx,
                 Thread.currentThread().getName() + ":" + accounts,
-                Thread.currentThread().getName() + " "+ getCurrentTime() + action,
+                Thread.currentThread().getName() + " " + getCurrentTime() + action,
                 isTransactionMsg);
         Thread.sleep(((int) (Math.random() * 100)));
     }

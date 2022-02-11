@@ -5,5 +5,10 @@ public class Const {
 
     public static final short NumberOfTransactions = 5;
 
-    public static final boolean StaleMatePossible = false;
+    public static PossibleMode Mode = PossibleMode.Synchronized;
+    public enum PossibleMode{
+        StaleMate,
+        LaysDownAccWhenNotNeeded,
+        Synchronized
+    }
 }
