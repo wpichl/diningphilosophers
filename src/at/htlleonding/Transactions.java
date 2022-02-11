@@ -37,13 +37,13 @@ public class Transactions implements Runnable {
         while (true) {
             _availableAccounts.clear();
             try {
-                if (Const.Mode == Const.PossibleMode.StaleMate) {
+                if (Settings.Mode == Const.PossibleMode.StaleMate) {
                     StaleMatePossibleVariation();
-                } else if (Const.Mode == Const.PossibleMode.LaysDownAccWhenNotNeeded) {
+                } else if (Settings.Mode == Const.PossibleMode.LaysDownAccWhenNotNeeded) {
                     StaleMateNotPossibleVariation();
-                } else if (Const.Mode == Const.PossibleMode.Synchronized) {
+                } else if (Settings.Mode == Const.PossibleMode.Synchronized) {
                     SynchronizedVariation();
-                } else if (Const.Mode == Const.PossibleMode.Pattern) {
+                } else if (Settings.Mode == Const.PossibleMode.Pattern) {
                     PatternVariation();
                 }
             } catch (InterruptedException ex) {

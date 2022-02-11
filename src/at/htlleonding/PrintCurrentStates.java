@@ -1,8 +1,8 @@
 package at.htlleonding;
 
 public class PrintCurrentStates {
-    static String _currentStates[] = new String[Const.NumberOfTransactions];
-    static long _transactionTransactions[] = new long[Const.NumberOfTransactions];
+    static String _currentStates[] = new String[Settings.NumberOfTransactions];
+    static long _transactionTransactions[] = new long[Settings.NumberOfTransactions];
     static long _iteration = 0;
     static long _actualTransactionCount = 0;
     static double _firstTransactionTime;
@@ -23,10 +23,10 @@ public class PrintCurrentStates {
     private synchronized static void printAllStates(int currentChange, String msg) {
         _iteration++;
         System.out.println("Iteration: " + _iteration);
-        System.out.println("\u001B[34m" + msg + "\u001B[0m");
+        System.out.println("\u001B[32m" + msg + "\u001B[0m");
         System.out.println();
-        if (Const.ShallPrintTransactionStates) {
-            for (int i = 0; i < Const.NumberOfTransactions; i++) {
+        if (Settings.ShallPrintTransactionStates) {
+            for (int i = 0; i < Settings.NumberOfTransactions; i++) {
                 String current = _currentStates[i];
                 if (i == currentChange) {
                     current = "\u001B[32m" + current + "\u001B[0m";
@@ -41,7 +41,7 @@ public class PrintCurrentStates {
                 Math.round(_actualTransactionCount / minutesElapsed) +
                 "\u001B[0m");
         System.out.println("Transactions per minute per Transaction: \u001B[34m" +
-                Math.round(_actualTransactionCount / minutesElapsed / Const.NumberOfTransactions) +
+                Math.round(_actualTransactionCount / minutesElapsed / Settings.NumberOfTransactions) +
                 "\u001B[0m");
         System.out.println(highestDiff());
         System.out.println("----------------------------");
@@ -51,17 +51,18 @@ public class PrintCurrentStates {
         long min = Long.MAX_VALUE;
         long max = Long.MIN_VALUE;
         String retVal = "";
-        if (Const.ShallPrintAllActualTransactionNumbers) {
+        if (Settings.ShallPrintAllActualTransactionNumbers) {
             retVal = "Actual transactions: ";
         }
         for (long curr : _transactionTransactions
         ) {
             if (curr < min) {
                 min = curr;
-            } else if (curr > max) {
+            }
+            if (curr > max) {
                 max = curr;
             }
-            if (Const.ShallPrintAllActualTransactionNumbers) {
+            if (Settings.ShallPrintAllActualTransactionNumbers) {
                 retVal += curr + ",";
             }
         }

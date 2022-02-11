@@ -2,23 +2,23 @@ package at.htlleonding;
 
 public class Main {
     public static void main(String[] args) {
-        Transactions[] transactors = new Transactions[Const.NumberOfTransactions];
-        BankAccount[] bankaccounts = new BankAccount[Const.NumberOfTransactions];
+        Transactions[] transactors = new Transactions[Settings.NumberOfTransactions];
+        BankAccount[] bankaccounts = new BankAccount[Settings.NumberOfTransactions];
 
-        if (Const.Mode == Const.PossibleMode.Pattern) {
+        if (Settings.Mode == Const.PossibleMode.Pattern) {
             Pattern.init();
         }
 
-        for (int i = 0; i < Const.NumberOfTransactions; i++) {
+        for (int i = 0; i < Settings.NumberOfTransactions; i++) {
             bankaccounts[i] = new BankAccount("Acc #" + (i + 1), "A" + (i + 1), (int) Math.random() * 1000);
         }
 
-        for (int i = 0; i < Const.NumberOfTransactions; i++) {
+        for (int i = 0; i < Settings.NumberOfTransactions; i++) {
             BankAccount left = bankaccounts[i];
-            BankAccount right = bankaccounts[(i + 1) % Const.NumberOfTransactions];
+            BankAccount right = bankaccounts[(i + 1) % Settings.NumberOfTransactions];
 
             // no check = deadlock
-            if (i == Const.NumberOfTransactions - 1) {
+            if (i == Settings.NumberOfTransactions - 1) {
                 transactors[i] = new Transactions(right, left, i);
             } else {
                 transactors[i] = new Transactions(left, right, i);
