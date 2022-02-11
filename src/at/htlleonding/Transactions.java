@@ -43,10 +43,44 @@ public class Transactions implements Runnable {
                     StaleMateNotPossibleVariation();
                 } else if (Const.Mode == Const.PossibleMode.Synchronized) {
                     SynchronizedVariation();
+                } else if (Const.Mode == Const.PossibleMode.Pattern) {
+                    PatternVariation();
                 }
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return;
+            }
+        }
+    }
+
+    private synchronized void PatternVariation() throws InterruptedException {
+        if (Pattern.patternAllowsAction(_idx)) {
+
+            if (mLeftAccount.canBeUsed()) {
+                mLeftAccount.updateUsage(false);
+                _availableAccounts.add(mLeftAccount);
+                doAction(": Picked up left account");
+
+                if (mRightAccount.canBeUsed()) {
+                    mRightAccount.updateUsage(false);
+                    _availableAccounts.add((mRightAccount));
+                    doAction(": Picked up right account");
+
+                    doAction(Const.TransactionMsg);
+
+                    _availableAccounts.remove(mLeftAccount);
+                    doAction(": transacted. Put down left account");
+                    mLeftAccount.updateUsage(true);
+                    _availableAccounts.remove(mRightAccount);
+                    doAction(": transacted. Put down right account - back to thinking");
+                    mRightAccount.updateUsage(true);
+                } else {
+                    _availableAccounts.remove(mLeftAccount);
+                    doAction(": right could not be picked up, putting left back - back to thinking");
+                    mLeftAccount.updateUsage(true);
+                }
+
+                Pattern.attemptMovePattern(_idx);
             }
         }
     }
