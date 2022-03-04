@@ -1,13 +1,13 @@
 package at.htlleonding;
 
 public class Settings {
-    public static final short NumberOfTransactions = 5;
+    public static final short NumberOfPhilosophers = 5;
 
-    public static final boolean ShallPrintTransactionStates = NumberOfTransactions < 10;
+    public static final boolean ShallPrintState = NumberOfPhilosophers < 10;
 
-    public static final boolean ShallPrintAllActualTransactionNumbers = NumberOfTransactions < 10;
+    public static final boolean ShallPrintAllActualNumbers = NumberOfPhilosophers < 10;
 
-    public static Const.PossibleMode Mode = Const.PossibleMode.LaysDownAccWhenNotNeeded;
+    public static Const.PossibleMode Mode = Const.PossibleMode.Pattern;
 
-    public static Const.ExampleMode Example = Const.ExampleMode.DiningPhilosophers;
+    public static Const.ExampleMode Example = Const.ExampleMode.Woodworker;
 }

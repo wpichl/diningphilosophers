@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Pattern {
-    private static boolean[] allowingMovement = new boolean[Settings.NumberOfTransactions];
+    private static boolean[] allowingMovement = new boolean[Settings.NumberOfPhilosophers];
     private static List<Integer> currentPattern = new LinkedList<>();
 
     public static void init()
@@ -13,7 +13,7 @@ public class Pattern {
         boolean everythingCalcded = false;
         while(!everythingCalcded)
         {
-            if(attempt >= Settings.NumberOfTransactions-1)
+            if(attempt >= Settings.NumberOfPhilosophers -1)
             {
                 everythingCalcded = true;
             }
@@ -57,7 +57,7 @@ public class Pattern {
              ) {
             int next = curr+1;
 
-            if(next >= Settings.NumberOfTransactions)
+            if(next >= Settings.NumberOfPhilosophers)
             {
                 next = 0;
             }

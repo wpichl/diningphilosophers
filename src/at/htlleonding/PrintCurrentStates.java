@@ -1,8 +1,8 @@
 package at.htlleonding;
 
 public class PrintCurrentStates {
-    static String _currentStates[] = new String[Settings.NumberOfTransactions];
-    static long _transactionTransactions[] = new long[Settings.NumberOfTransactions];
+    static String _currentStates[] = new String[Settings.NumberOfPhilosophers];
+    static long _transactionTransactions[] = new long[Settings.NumberOfPhilosophers];
     static long _iteration = 0;
     static long _actualTransactionCount = 0;
     static double _firstTransactionTime;
@@ -25,8 +25,8 @@ public class PrintCurrentStates {
         System.out.println("Iteration: " + _iteration);
         System.out.println("\u001B[32m" + msg + "\u001B[0m");
         System.out.println();
-        if (Settings.ShallPrintTransactionStates) {
-            for (int i = 0; i < Settings.NumberOfTransactions; i++) {
+        if (Settings.ShallPrintState) {
+            for (int i = 0; i < Settings.NumberOfPhilosophers; i++) {
                 String current = _currentStates[i];
                 if (i == currentChange) {
                     current = "\u001B[32m" + current + "\u001B[0m";
@@ -41,7 +41,7 @@ public class PrintCurrentStates {
                 Math.round(_actualTransactionCount / minutesElapsed) +
                 "\u001B[0m");
         System.out.println(Const.eatenAlias + " per minute per " + Const.PhilosopherAlias + ": \u001B[34m" +
-                Math.round(_actualTransactionCount / minutesElapsed / Settings.NumberOfTransactions) +
+                Math.round(_actualTransactionCount / minutesElapsed / Settings.NumberOfPhilosophers) +
                 "\u001B[0m");
         System.out.println(highestDiff());
         System.out.println("----------------------------");
@@ -51,7 +51,7 @@ public class PrintCurrentStates {
         long min = Long.MAX_VALUE;
         long max = Long.MIN_VALUE;
         String retVal = "";
-        if (Settings.ShallPrintAllActualTransactionNumbers) {
+        if (Settings.ShallPrintAllActualNumbers) {
             retVal = "Actual "+Const.eatenAlias+": ";
         }
         for (long curr : _transactionTransactions
@@ -62,7 +62,7 @@ public class PrintCurrentStates {
             if (curr > max) {
                 max = curr;
             }
-            if (Settings.ShallPrintAllActualTransactionNumbers) {
+            if (Settings.ShallPrintAllActualNumbers) {
                 retVal += curr + ",";
             }
         }
